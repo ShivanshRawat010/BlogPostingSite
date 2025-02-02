@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body style="background-color: rgb(33, 33, 33);">
+    <div style="color: white; margin: 20px; box-sizing: border-box;">
+        <a href="/logout" style="background-color: brown; padding: 5px; margin-bottom: 20px; display: inline-block; border-radius: 5px;">
+            LogOut
+        </a>
+        <div style="display: flex; align-items: center; column-gap: 10px; ">
+            <div style="height: 60px; width: 60px; display: inline-block; border-radius: 30px; overflow: hidden;">
+                <img src="/images/uploads/<%= user.profilepic %>" alt="" style="width: 100%; height: 100%; object-fit: cover; " >
+            </div>
+            <span style="font-size: xx-large;">Hello, <span style="font-weight: bolder; color: brown;"><%=user.username%></span> 👋</span>
+        </div>
+
+        <form action="/post", method="post">
+            <textarea name="post" placeholder="What's on your mind" style="outline: none; height: 100px; width: 500px; margin-top: 30px; border-radius: 5px; background-color: rgb(43, 43, 43); padding: 5px; resize: none; border: solid 1px white;"></textarea>
+            <input type="submit" value="Create Post" style="height: 35px; width: 100px; color: white; background-color: rgb(0, 165, 230); border-radius: 5px; border: 0; outline: none; padding: 5px; display: block; margin-top: 10px;">
+        </form>
+
+        <h3 style="color: grey; margin-top: 30px;">Your posts</h3>
+
+        <div>
+
+            <% allPosts.reverse().forEach(function(post) { %>
+                <div style="outline: none; width: 500px; margin-top: 20px; border-radius: 5px; background-color: rgb(43, 43, 43); padding: 15px; overflow-x: hidden; overflow-y: auto;">
+                    <h4 style="color: dodgerblue; margin-bottom: 5px;">@<%= post.user.username %></h4>
+                    <p style="margin-bottom: 10px;">
+                        <%= post.content %>
+                    </p>
+                    <%= post.likes.length %>
+                    <div style="display: flex; flex-direction: row; column-gap: 20px;">
+                        <a href="/likePost/<%= post._id %>" style="color: dodgerblue;">
+                            <% if(post.likes.indexOf(user._id) === -1){ %>
+                                Like
+                            <% } else {%>
+                                Unlike
+                            <% } %>
+                        </a>
+                        <a href="/editPost" style="color: grey;">
+                            Edit
+                        </a>
+
+                        <% if(post.user._id.toString() === user._id.toString()){ %>
+
+                            <a href="/deletePost/<%=post._id%>" style="color: crimson;">
+                                Delete
+                            </a>
+
+                        <% } %>
+
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+    </div>
+</body>
+</html>
