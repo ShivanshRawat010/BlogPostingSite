@@ -15,7 +15,6 @@ app.use(express.urlencoded({extended: true}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
-
 function isLoggedIn(req, res, next){
     if(!req.cookies.token){
         res.redirect("/login");
@@ -47,15 +46,11 @@ app.post("/upload", function(req, res){
 })
 
 app.post("/register", async function(req, res){
-    
     let {name, username, age, password, email} = req.body;
-
     let user = await userModel.findOne({email});
-
     if(user){
         res.status(500).send("User already registered");
     }
-
     bcrypt.genSalt(10, function(err, salt){
         bcrypt.hash(password, salt, async function(err, hash){
             let user = await userModel.create({
@@ -67,15 +62,13 @@ app.post("/register", async function(req, res){
             })
             let token = jwt.sign({email: email, userid: user._id}, "secret");
             res.cookie("token", token);
-
-            res.redirect("/profile")
+            res.redirect("/profile");
         })
     })
-
 })
 
 app.get("/login", function(req, res){
-    res.render("login")
+    res.render("login");
 })
 
 app.get("/profile", isLoggedIn , async function(req,res){
@@ -86,14 +79,12 @@ app.get("/profile", isLoggedIn , async function(req,res){
 
 app.get("/likePost/:id", isLoggedIn, async function(req,res){
     let post = await postModel.findOne({_id: req.params.id}).populate("user");
-
     if(post.likes.indexOf(req.user.userid) === -1){
         post.likes.push(req.user.userid);
     }
     else{
         post.likes.splice(post.likes.indexOf(req.user.userid), 1);
     }
-    
     await post.save();
     res.redirect("/profile");
 })
@@ -104,15 +95,11 @@ app.get("/deletePost/:id", isLoggedIn, async function(req,res){
 })
 
 app.post("/login", async function(req, res){
-
     let {email, password} = req.body;
-
     let user = await userModel.findOne({email});
-
     if(!user){
         res.status(500).send("Something went wrong");
     }
-
     bcrypt.compare(password, user.password, function(err, result){
         if(result){
             let token = jwt.sign({email: email, userid: user._id}, "secret");
@@ -126,16 +113,13 @@ app.post("/login", async function(req, res){
 })
 
 app.post("/post", isLoggedIn , async function(req,res){
-    
     let user = await userModel.findOne({email: req.user.email});
     let post = await postModel.create({
         user: req.user.userid,
         content: req.body.post
     })
-
     user.posts.push(post._id);
     await user.save();
-
     res.redirect("/profile");
 })
 
@@ -144,7 +128,7 @@ app.get("/logout", function(req, res) {
     res.redirect("/login");
 });
 
-
-app.listen(3000, function(){
-    console.log("Server started at port 3000");
-})
+const port = process.env.PORT || 3000;
+app.listen(port, function(){
+    console.log(`Server started at port ${port}`);
+});
