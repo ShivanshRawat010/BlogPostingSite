@@ -5,9 +5,9 @@ const userModel = require('./models/user');
 const postModel = require('./models/post');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
-const multerconfig = require('./config/multerconfig');
 const path = require('path');
 const upload = require('./config/multerconfig');
+require('dotenv').config();
 
 app.set("view engine", "ejs");
 app.use(express.json());
